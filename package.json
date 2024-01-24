@@ -1,0 +1,15 @@
+{
+  "name": "yandex-object-storage-for-google-apps-script",
+  "version": "1.0.0",
+  "description": "An API binding for using AWS Simple Storage Service (S3) from Google Apps Script.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@google/clasp": "^2.4.2"
+  }
+}
