@@ -21,7 +21,7 @@ function S3Request(service) {
 
   this.date = new Date();
   this.serviceName = 's3';
-  this.region = 'us-east-1';
+  this.region = 'ru-central1'; // TODO: Move to Yandex Cloud
   this.expiresHeader = 'presigned-expires';
   this.extQueryString = '';
 }
@@ -57,7 +57,7 @@ S3Request.prototype.getContentType = function () {
  * @return {S3Request} this request, for chaining
  */
 S3Request.prototype.setContent = function(content) {
-  if (typeof content != 'string') throw 'content must be passed as a string'
+  // if (typeof content != 'string') throw 'content must be passed as a string' // TODO: Not only string
   this.content = content;
   return this;
 };
@@ -110,7 +110,8 @@ S3Request.prototype.addHeader = function(name, value) {
 };
 
 S3Request.prototype._getUrl = function() {
-  return "https://" + this.bucket.toLowerCase() + ".s3." + this.region + ".amazonaws.com/" + this.objectName;
+  // return "https://" + this.bucket.toLowerCase() + ".s3." + this.region + ".amazonaws.com/" + this.objectName;
+   return "https://" + this.bucket.toLowerCase() + ".storage.yandexcloud.net/" + this.objectName; // TODO: Move to Yandex
 };
 /* gets Url for S3 request
  * @return {string} url to which request will be sent
@@ -141,7 +142,9 @@ S3Request.prototype.execute = function(options) {
   delete this.headers['Date'];
   delete this.headers['X-Amz-Date'];
   this.headers['X-Amz-Content-Sha256'] = this.hexEncodedBodyHash();
-  this.headers['Host'] = this._getUrl().replace(/https?:\/\/(.+amazonaws\.com).*/, '$1');
+  // this.headers['Host'] = this._getUrl().replace(/https?:\/\/(.+amazonaws\.com).*/, '$1');
+  this.headers['Host'] = this._getUrl().replace(/https?:\/\/(.+storage\.yandexcloud\.net).*/, '$1'); // TODO: Move to Yandex
+  console.log(this.headers);
 
   var credentials = {
     accessKeyId: this.service.accessKeyId,
@@ -337,7 +340,8 @@ S3Request.prototype.canonicalString = function() {
 }
 
 S3Request.prototype.canonicalUri = function(uri) {
-  var m = uri.match(/https?:\/\/(.+)\.s3.*\.amazonaws\.com\/(.+)$/);
+  // var m = uri.match(/https?:\/\/(.+)\.s3.*\.amazonaws\.com\/(.+)$/);
+  var m = uri.match(/https?:\/\/(.+)\.storage\.yandexcloud\.net\/(.+)$/); // Move to Yandex
   var object = m ? m[2] : ""
   return "/" + encodeURIComponent(object).replace(/%2F/ig, '/')
 }
@@ -390,7 +394,9 @@ S3Request.prototype.credentialString = function(datetime) {
 }
 
 S3Request.prototype.hexEncodedHash = function(string) {
+  if(typeof string === 'string') // TODO: Not only strings
   return this.hex(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, string, Utilities.Charset.UTF_8));
+  return this.hex(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, string.getBytes()));
 }
 
 S3Request.prototype.hexEncodedBodyHash = function() {

@@ -135,11 +135,12 @@ S3.prototype.putObject = function (bucket, objectName, object, options) {
   
   //wrap object in a Blob if it doesn't appear to be one
   if (failedBlobDuckTest) {
+    console.log("Wrapping object in Blob");
     object = Utilities.newBlob(JSON.stringify(object), "application/json");
     object.setName(objectName);
   }
   
-  request.setContent(object.getDataAsString());
+  request.setContent(object); //.getDataAsString('UTF-8'));
   request.setContentType(object.getContentType());
   
   request.execute(options);  
